@@ -1,0 +1,238 @@
+import React, { useState, useEffect } from 'react';
+import { api } from '../services/api';
+import type { Poster, Season, Source, Episode } from '../types';
+import { Loader } from './Loader';
+import { StarIcon, BackIcon } from './icons';
+import { VideoPlayer } from './VideoPlayer';
+
+interface DetailViewProps {
+  item: Poster;
+  onBack: () => void;
+}
+
+export const DetailView = ({ item, onBack }: DetailViewProps) => {
+  const [details, setDetails] = useState<Poster | null>(item);
+  const [seasons, setSeasons] = useState<Season[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedSeasonId, setSelectedSeasonId] = useState<number | null>(null);
+  const [playingSource, setPlayingSource] = useState<{ source: Source; episode?: Episode } | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        if (item.type === 'serie') {
+          // For series, the main details are from the passed `item`. We only need to fetch seasons.
+          const seasonData = await api.getSeasons(item.id);
+          setDetails(item);
+          setSeasons(seasonData);
+          if (seasonData && seasonData.length > 0) {
+            setSelectedSeasonId(seasonData[0].id);
+          }
+        } else {
+          // For movies, fetch the full, detailed information.
+          const movieDetails = await api.getMovie(item.id);
+          setDetails(movieDetails);
+          setSeasons([]); // Ensure seasons are cleared for movies
+        }
+      } catch (err) {
+        setError('خطا در بارگذاری جزئیات.');
+        setSeasons([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [item]);
+
+  const renderPlayButtons = (playSources: Source[], episode?: Episode) => {
+    if (playSources.length === 0) return <p className="text-gray-400">موردی برای پخش وجود ندارد.</p>;
+
+    return (
+      <div className="flex flex-wrap gap-4">
+        {playSources.map(source => (
+          <button
+            key={source.id}
+            onClick={() => setPlayingSource({ source, episode })}
+            className="px-5 py-2 bg-red-600 text-white font-bold rounded-lg text-md hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-400 transition-all duration-200"
+          >
+            پخش {source.quality}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  const renderDownloadButtons = (downloadSources: Source[]) => {
+    if (downloadSources.length === 0) return <p className="text-gray-400">موردی برای دانلود وجود ندارد.</p>;
+
+    return (
+      <div className="flex flex-wrap gap-4">
+        {downloadSources.map(source => (
+          <a
+            key={source.id}
+            href={source.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            download
+            className="px-5 py-2 bg-blue-600 text-white font-bold rounded-lg text-md hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-400 transition-all duration-200"
+          >
+            دانلود {source.quality}
+          </a>
+        ))}
+      </div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full h-full relative">
+        <img src={item.cover} alt="" className="absolute inset-0 w-full h-full object-cover blur-sm opacity-30" />
+        <Loader />
+      </div>
+    );
+  }
+
+  if (error || !details) {
+    return <div className="p-10 text-2xl text-red-500">{error || 'موردی برای نمایش وجود ندارد.'}</div>;
+  }
+
+  const selectedSeason = seasons.find(s => s.id === selectedSeasonId);
+
+  return (
+    <div className="relative min-h-screen">
+      {playingSource && details && (
+        <VideoPlayer
+          sourceUrl={playingSource.source.url}
+          title={`${details.title}${selectedSeason ? ` - ${selectedSeason.title}` : ''}${playingSource.episode?.title ? ` - ${playingSource.episode.title}` : ''}`}
+          onClose={() => setPlayingSource(null)}
+        />
+      )}
+      <button
+        onClick={onBack}
+        className="absolute top-8 right-8 z-30 bg-black/50 p-3 rounded-full text-white hover:bg-red-600 focus:outline-none focus:ring-4 focus:ring-red-400 transition-all"
+        aria-label="بازگشت"
+      >
+        <BackIcon className="w-8 h-8" />
+      </button>
+
+      <div className="absolute inset-0 h-[70vh]">
+        <img src={details.cover} alt={details.title} className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent" />
+      </div>
+
+      <div className="relative z-10 pt-[40vh] md:pt-[35vh] p-10">
+        <div className="flex flex-col md:flex-row gap-10">
+          <div className="flex-shrink-0 w-48 md:w-56 lg:w-64 -mt-24 md:-mt-40 self-center md:self-start">
+            <img
+              src={details.image}
+              alt={`Poster for ${details.title}`}
+              className="w-full h-auto rounded-lg shadow-2xl object-cover"
+            />
+          </div>
+
+          <div className="flex-1 text-center md:text-right">
+            <h1 className="text-4xl lg:text-6xl font-extrabold text-white">{details.title}</h1>
+            <div className="flex items-center justify-center md:justify-start space-x-6 space-x-reverse my-4 text-gray-300 text-lg">
+              <span>{details.year}</span>
+              <span className="flex items-center">
+                <StarIcon className="w-6 h-6 text-yellow-400 mr-2" />
+                {details.imdb}
+              </span>
+              <span>{details.duration}</span>
+              <span className="border border-gray-500 px-2 py-1 rounded text-sm">{details.classification || 'N/A'}</span>
+            </div>
+            <div className="flex flex-wrap justify-center md:justify-start gap-2 my-4">
+              {details.genres.map(g => (
+                <span key={g.id} className="bg-gray-700 text-gray-200 px-3 py-1 rounded-full text-sm whitespace-nowrap">{g.title}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8">
+          {details.type === 'movie' && details.sources.length > 0 && (
+            <div className="my-8 space-y-6">
+              <div>
+                <h2 className="text-3xl font-bold mb-4">پخش آنلاین</h2>
+                {renderPlayButtons(details.sources)}
+              </div>
+              <div>
+                <h2 className="text-3xl font-bold mb-4">دانلود</h2>
+                {renderDownloadButtons(details.sources)}
+              </div>
+            </div>
+          )}
+
+          {details.type === 'serie' && seasons.length > 0 && (
+            <div className="my-12">
+              <h2 className="text-4xl font-bold mb-6">فصل‌ها و قسمت‌ها</h2>
+
+              {/* Season Tabs */}
+              <div className="flex space-x-4 space-x-reverse border-b-2 border-gray-700 mb-6 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+                {seasons.map(season => (
+                  <button
+                    key={season.id}
+                    onClick={() => setSelectedSeasonId(season.id)}
+                    className={`px-6 py-3 font-semibold text-xl rounded-t-lg transition-colors duration-200 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-inset ${selectedSeasonId === season.id
+                      ? 'bg-red-600 text-white'
+                      : 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white'
+                      }`}
+                  >
+                    {season.title}
+                  </button>
+                ))}
+              </div>
+
+              {/* Episodes List */}
+              {selectedSeason && (
+                <div className="space-y-2">
+                  {selectedSeason.episodes.map(episode => (
+                    <div key={episode.id} className="bg-gray-800 rounded-lg p-3 flex items-start justify-between gap-4 transition-all hover:bg-gray-700/80 focus-within:ring-4 focus-within:ring-red-500">
+                      {/* Episode Info */}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-lg text-white truncate">{episode.title}</h4>
+                        <span className="text-xs text-gray-500 mt-1 block">{episode.duration}</span>
+                      </div>
+
+                      {/* Actions */}
+                      {episode.sources && episode.sources.length > 0 && (
+                        <div className="flex-shrink-0 flex flex-wrap items-center justify-end gap-2 max-w-[60%]">
+                          {episode.sources.map(source => (
+                            <button
+                              key={`${source.id}-play`}
+                              onClick={() => setPlayingSource({ source, episode })}
+                              className="px-4 py-2 bg-red-600 text-white font-bold rounded-lg text-base hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-200"
+                            >
+                              پخش {source.quality}
+                            </button>
+                          ))}
+                          {episode.sources.map(source => (
+                            <a
+                              key={`${source.id}-download`}
+                              href={source.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              download
+                              className="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg text-base hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-200"
+                            >
+                              دانلود {source.quality}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          <p className="max-w-5xl text-gray-200 text-xl leading-relaxed whitespace-pre-wrap mt-8">{details.description}</p>
+        </div>
+      </div>
+    </div>
+  );
+};

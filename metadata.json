@@ -1,0 +1,5 @@
+{
+  "name": "Iranflix TV",
+  "description": "A web-based client for the Iranflix API, designed with an Android TV-style user interface for easy navigation and a cinematic viewing experience.",
+  "requestFramePermissions": []
+}
