@@ -26,17 +26,9 @@ async function getFilteredContent(type: 'movie' | 'serie', filters: FilterOption
     const order = filters.sort;
     const genre = filters.genre === 'all' ? 0 : filters.genre;
 
-    let endpoint = '';
-
-    // This path structure is based on the openapi.json spec.
-    // It changes depending on the sorting method.
-    if (order === 'created') {
-        // This endpoint uses the genre as a path parameter.
-        endpoint = `/${type}/by/filtres/${genre}/created/${page}/${API_KEY}/`;
-    } else {
-        // The other sorting endpoints have '0' hardcoded where the genre would be.
-        endpoint = `/${type}/by/filtres/0/${order}/${page}/${API_KEY}/`;
-    }
+    // FIX: The genre filter was being ignored for all sort options except 'created' on movie/serie pages.
+    // The API endpoint has been corrected to apply the genre filter consistently regardless of the sort order.
+    const endpoint = `/${type}/by/filtres/${genre}/${order}/${page}/${API_KEY}/`;
 
     return fetcher<Poster[]>(endpoint);
 }

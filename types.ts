@@ -1,5 +1,5 @@
 // FIX: Add a shared 'View' type for navigation state to be used across components, resolving type conflicts.
-export type View = 'home' | 'search' | 'movies' | 'series' | 'genre' | 'anime' | 'country';
+export type View = 'home' | 'search' | 'movies' | 'series' | 'genre' | 'anime' | 'country' | 'favorites';
 
 export interface Genre {
   id: number;

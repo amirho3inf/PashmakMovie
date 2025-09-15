@@ -7,7 +7,6 @@ import {
   EnterFullscreenIcon,
   ExitFullscreenIcon,
   CloseIcon,
-  SubtitleIcon
 } from './icons';
 import { Loader } from './Loader';
 
@@ -35,7 +34,6 @@ export const VideoPlayer = ({ sourceUrl, title, onClose }: VideoPlayerProps) => 
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsTimeoutRef = useRef<number | null>(null);
-  const initialTrackSet = useRef(false);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -45,15 +43,9 @@ export const VideoPlayer = ({ sourceUrl, title, onClose }: VideoPlayerProps) => 
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isControlsVisible, setIsControlsVisible] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  
-  // State for internal subtitles
-  const [availableTracks, setAvailableTracks] = useState<TextTrack[]>([]);
-  const [selectedTrack, setSelectedTrack] = useState<TextTrack | null>(null);
-  const [isSubtitleMenuOpen, setIsSubtitleMenuOpen] = useState(false);
 
   const hideControls = () => {
     setIsControlsVisible(false);
-    setIsSubtitleMenuOpen(false);
   }
 
   const showControls = useCallback(() => {
@@ -139,67 +131,6 @@ export const VideoPlayer = ({ sourceUrl, title, onClose }: VideoPlayerProps) => 
         window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isFullscreen, onClose, showControls]);
-  
-  // Effect to detect and manage internal subtitle tracks
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const updateTracks = () => {
-      const videoElem = videoRef.current;
-      if (!videoElem) return;
-
-      const tracks = Array.from(videoElem.textTracks).filter(
-        (track) => track.kind === 'subtitles' || track.kind === 'captions'
-      );
-      
-      setAvailableTracks(tracks);
-      
-      let activeTrack = tracks.find(t => t.mode === 'showing');
-
-      // If tracks have been found and we haven't set a default one yet
-      if (!initialTrackSet.current && tracks.length > 0) {
-        // If the browser hasn't already enabled a track, let's enable one.
-        if (!activeTrack) {
-            // A track with the 'default' property is the best candidate.
-            // FIX: The 'default' property is not in the standard TextTrack type, but may exist on tracks derived from <track> elements.
-            // Cast to `any` to access this property and respect the original logic of selecting a default track.
-            const trackToEnable = tracks.find(t => (t as any).default) || tracks[0];
-            if (trackToEnable) {
-                // Set its mode to 'showing' to make it visible.
-                trackToEnable.mode = 'showing';
-                activeTrack = trackToEnable; // update for state sync below
-            }
-        }
-        initialTrackSet.current = true; // Mark that we've handled the initial setup.
-      }
-      
-      setSelectedTrack(activeTrack || null);
-    };
-
-    const handleLoadedMetadata = () => {
-        // When new metadata loads, we might have new tracks.
-        // Reset the flag to allow auto-selection for the new source.
-        initialTrackSet.current = false;
-        // A small delay can help ensure tracks are parsed from the media stream
-        setTimeout(updateTracks, 500);
-    };
-
-    video.textTracks.addEventListener('addtrack', updateTracks);
-    video.textTracks.addEventListener('change', updateTracks);
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
-
-    // Initial check on mount
-    updateTracks();
-
-    return () => {
-      if (video.textTracks) {
-        video.textTracks.removeEventListener('addtrack', updateTracks);
-        video.textTracks.removeEventListener('change', updateTracks);
-      }
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-    };
-  }, [sourceUrl]); // Rerun if source changes
 
   const handlePlayPause = () => {
     if (videoRef.current) {
@@ -236,31 +167,18 @@ export const VideoPlayer = ({ sourceUrl, title, onClose }: VideoPlayerProps) => 
     }
   };
 
-  const handleTrackSelect = (track: TextTrack | null) => {
-    if (!videoRef.current) return;
-    
-    // Disable all subtitle tracks
-    availableTracks.forEach(t => {
-      t.mode = 'disabled';
-    });
-
-    // Enable the selected one
-    if (track) {
-      track.mode = 'showing';
-    }
-    
-    setSelectedTrack(track);
-    setIsSubtitleMenuOpen(false);
-  };
-
   // Video Element Event Handlers
   const onPlay = () => setIsPlaying(true);
   const onPause = () => setIsPlaying(false);
   const onTimeUpdate = () => {
-    if (videoRef.current) setCurrentTime(videoRef.current.currentTime);
+    if (videoRef.current) {
+      setCurrentTime(videoRef.current.currentTime);
+    }
   };
   const onDurationChange = () => {
-    if (videoRef.current) setDuration(videoRef.current.duration);
+    if (videoRef.current) {
+      setDuration(videoRef.current.duration);
+    }
   };
   const onVolumeChange = () => {
     if (videoRef.current) {
@@ -272,7 +190,10 @@ export const VideoPlayer = ({ sourceUrl, title, onClose }: VideoPlayerProps) => 
   const onPlaying = () => setIsLoading(false);
   const onLoadedData = () => {
       setIsLoading(false);
-      videoRef.current?.play().catch(err => {
+      const video = videoRef.current;
+      if (!video) return;
+
+      video.play().catch(err => {
         console.warn("Autoplay was prevented:", err);
         setIsPlaying(false);
       });
@@ -304,44 +225,48 @@ export const VideoPlayer = ({ sourceUrl, title, onClose }: VideoPlayerProps) => 
         crossOrigin="anonymous"
       />
       
-      {isLoading && <div className="absolute z-10"><Loader /></div>}
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center z-10">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-red-600"></div>
+        </div>
+      )}
 
       {/* Header - Always visible with controls, even during loading */}
       <div
-        className={`absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/70 to-transparent flex items-center justify-between transition-opacity duration-300 ${isControlsVisible ? 'opacity-100' : 'opacity-0'}`}
+        className={`absolute top-0 left-0 right-0 p-2 md:p-4 bg-gradient-to-b from-black/70 to-transparent flex items-center justify-between transition-opacity duration-300 ${isControlsVisible ? 'opacity-100' : 'opacity-0'}`}
       >
-        <h2 className="text-white text-2xl font-bold truncate">{title}</h2>
+        <h2 className="text-white text-lg md:text-2xl font-bold truncate">{title}</h2>
         <button onClick={onClose} className="p-2 text-white hover:bg-white/20 rounded-full" aria-label="Close">
-          <CloseIcon className="w-8 h-8" />
+          <CloseIcon className="w-6 h-6 md:w-8 md:h-8" />
         </button>
       </div>
 
       {/* Controls */}
       <div
-        className={`absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent transition-opacity duration-300 ${isControlsVisible ? 'opacity-100' : 'opacity-0'}`}
+        className={`absolute bottom-0 left-0 right-0 p-2 md:p-4 bg-gradient-to-t from-black/70 to-transparent transition-opacity duration-300 ${isControlsVisible ? 'opacity-100' : 'opacity-0'}`}
       >
         {/* Progress Bar */}
-        <div className="flex items-center gap-4">
-          <span className="text-white font-mono text-sm">{formatTime(currentTime)}</span>
+        <div className="flex items-center gap-2 md:gap-4">
+          <span className="text-white font-mono text-xs md:text-sm">{formatTime(currentTime)}</span>
           <input
             type="range"
             min="0"
             max={duration || 0}
             value={currentTime}
             onChange={handleSeek}
-            className="w-full h-2 bg-gray-500/50 rounded-lg appearance-none cursor-pointer accent-red-600"
+            className="w-full h-1 md:h-2 bg-gray-500/50 rounded-lg appearance-none cursor-pointer accent-red-600"
           />
-          <span className="text-white font-mono text-sm">{formatTime(duration)}</span>
+          <span className="text-white font-mono text-xs md:text-sm">{formatTime(duration)}</span>
         </div>
         {/* Bottom Controls */}
         <div className="flex items-center justify-between mt-2">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <button onClick={handlePlayPause} className="p-2 text-white hover:bg-white/20 rounded-full" aria-label={isPlaying ? "Pause" : "Play"}>
-              {isPlaying ? <PauseIcon className="w-8 h-8" /> : <PlayIcon className="w-8 h-8" />}
+              {isPlaying ? <PauseIcon className="w-7 h-7 md:w-8 md:h-8" /> : <PlayIcon className="w-7 h-7 md:w-8 md:h-8" />}
             </button>
             <div className="flex items-center gap-2 group">
                <button onClick={handleMute} className="p-2 text-white hover:bg-white/20 rounded-full" aria-label={isMuted ? "Unmute" : "Mute"}>
-                  {isMuted || volume === 0 ? <VolumeOffIcon className="w-7 h-7" /> : <VolumeUpIcon className="w-7 h-7" />}
+                  {isMuted || volume === 0 ? <VolumeOffIcon className="w-6 h-6 md:w-7 md:h-7" /> : <VolumeUpIcon className="w-6 h-6 md:w-7 md:h-7" />}
                </button>
                <input
                   type="range"
@@ -350,40 +275,13 @@ export const VideoPlayer = ({ sourceUrl, title, onClose }: VideoPlayerProps) => 
                   step="0.05"
                   value={isMuted ? 0 : volume}
                   onChange={handleVolumeChange}
-                  className="w-0 group-hover:w-24 h-2 bg-gray-500/50 rounded-lg appearance-none cursor-pointer accent-white transition-all duration-300"
+                  className="w-16 md:w-0 md:group-hover:w-24 h-1 md:h-2 bg-gray-500/50 rounded-lg appearance-none cursor-pointer accent-white transition-all duration-300"
                />
             </div>
           </div>
           <div className="relative flex items-center gap-2">
-            {isSubtitleMenuOpen && availableTracks.length > 0 && (
-                <div className="absolute bottom-14 right-0 bg-black/80 rounded-lg p-2 flex flex-col items-stretch z-20 w-48 text-right">
-                    <button
-                        onClick={() => handleTrackSelect(null)}
-                        className={`px-3 py-2 text-lg rounded-md text-right w-full transition-colors ${!selectedTrack ? 'bg-red-600 text-white' : 'text-gray-200 hover:bg-white/10'}`}
-                    >
-                        خاموش
-                    </button>
-                    {availableTracks.map((track, index) => (
-                        <button
-                            key={index}
-                            onClick={() => handleTrackSelect(track)}
-                            className={`px-3 py-2 text-lg rounded-md text-right w-full transition-colors truncate ${selectedTrack === track ? 'bg-red-600 text-white' : 'text-gray-200 hover:bg-white/10'}`}
-                        >
-                            {track.label || track.language || `Track ${index + 1}`}
-                        </button>
-                    ))}
-                </div>
-            )}
-            <button 
-              onClick={() => setIsSubtitleMenuOpen(prev => !prev)}
-              disabled={availableTracks.length === 0}
-              className={`p-2 text-white rounded-full transition-colors disabled:text-gray-600 disabled:cursor-not-allowed enabled:hover:bg-white/20 ${selectedTrack ? 'text-red-500' : ''}`} 
-              aria-label="Select Subtitles"
-            >
-                <SubtitleIcon className="w-7 h-7" />
-            </button>
             <button onClick={handleFullscreen} className="p-2 text-white hover:bg-white/20 rounded-full" aria-label={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}>
-              {isFullscreen ? <ExitFullscreenIcon className="w-7 h-7" /> : <EnterFullscreenIcon className="w-7 h-7" />}
+              {isFullscreen ? <ExitFullscreenIcon className="w-6 h-6 md:w-7 md:h-7" /> : <EnterFullscreenIcon className="w-6 h-6 md:w-7 md:h-7" />}
             </button>
           </div>
         </div>

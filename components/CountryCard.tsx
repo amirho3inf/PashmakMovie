@@ -18,7 +18,7 @@ export const CountryCard = React.forwardRef<HTMLDivElement, CountryCardProps>(({
     <div
       ref={ref}
       tabIndex={0}
-      className="group relative flex-shrink-0 w-48 h-28 rounded-lg overflow-hidden cursor-pointer 
+      className="group relative flex-shrink-0 w-36 h-24 md:w-48 md:h-28 rounded-lg overflow-hidden cursor-pointer 
                  transition-transform duration-300 ease-in-out transform 
                  focus:outline-none focus:ring-4 focus:ring-red-500 focus:scale-105 hover:scale-105 z-10 hover:z-20 focus:z-20
                  flex items-center justify-center p-4 bg-gray-800"
@@ -26,7 +26,7 @@ export const CountryCard = React.forwardRef<HTMLDivElement, CountryCardProps>(({
       onKeyDown={handleKeyDown}
     >
       <img src={country.image} alt={country.title} className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity" />
-      <h3 className="relative text-white text-xl font-bold text-center">{country.title}</h3>
+      <h3 className="relative text-white text-lg md:text-xl font-bold text-center">{country.title}</h3>
     </div>
   );
 });

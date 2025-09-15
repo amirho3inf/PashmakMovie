@@ -50,6 +50,19 @@ export const PlayIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+export const CloseIcon = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
+
+export const HeartIcon = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" fill="none">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+  </svg>
+);
+
+// FIX: Add missing icons for the video player controls.
 export const PauseIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="currentColor" viewBox="0 0 24 24">
     <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
@@ -70,26 +83,19 @@ export const VolumeOffIcon = ({ className }: { className?: string }) => (
 
 export const EnterFullscreenIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4h4m12 4V4h-4M4 16v4h4m12-4v4h-4" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5h-4m4 0v-4m0 4l-5-5" />
   </svg>
 );
 
 export const ExitFullscreenIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 4H4v4m12-4h4v4M8 20H4v-4m12 4h4v-4" />
-  </svg>
-);
-
-export const CloseIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H4v-4m16 4h-4v-4M8 8H4v4m16-4h-4V4" />
   </svg>
 );
 
 export const SubtitleIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M3 5.9V18.1C3 19.1493 3.85068 20 4.9 20H19.1C20.1493 20 21 19.1493 21 18.1V5.9C21 4.85068 20.1493 4 19.1 4H4.9C3.85068 4 3 4.85068 3 5.9Z" />
-    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 14.5H9.5C10.6046 14.5 11.5 13.6046 11.5 12.5V11.5C11.5 10.3954 10.6046 9.5 9.5 9.5H7.5V14.5Z" />
-    <path strokeLinecap="round" strokeLinejoin="round" d="M14.5 14.5H16.5C17.6046 14.5 18.5 13.6046 18.5 12.5V11.5C18.5 10.3954 17.6046 9.5 16.5 9.5H14.5V14.5Z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21 4H3a2 2 0 00-2 2v12a2 2 0 002 2h18a2 2 0 002-2V6a2 2 0 00-2-2z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7 11h4m-4 4h10" />
   </svg>
 );

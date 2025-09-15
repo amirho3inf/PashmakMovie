@@ -1,5 +1,5 @@
 import React from 'react';
-import { HomeIcon, SearchIcon, MovieIcon, TVIcon, SparklesIcon } from './icons';
+import { HomeIcon, SearchIcon, MovieIcon, TVIcon, SparklesIcon, HeartIcon } from './icons';
 // FIX: Import the shared View type from types.ts to ensure consistency with the App component.
 import type { View } from '../types';
 
@@ -33,7 +33,7 @@ const NavItem = ({ icon, label, isActive, onClick }: { icon: React.ReactNode, la
 
 export const Sidebar = ({ currentView, setCurrentView }: SidebarProps) => {
   return (
-    <nav className="w-72 h-screen bg-black/50 p-6 flex flex-col space-y-10">
+    <nav className="w-72 h-screen bg-black/50 p-6 flex-col space-y-10 hidden md:flex">
       <div className="flex items-center space-x-3 space-x-reverse">
         <h1 className="text-3xl font-bold text-red-600">پشمک‌مووی</h1>
       </div>
@@ -67,6 +67,12 @@ export const Sidebar = ({ currentView, setCurrentView }: SidebarProps) => {
           label="انیمیشن / انیمه"
           isActive={currentView === 'anime'}
           onClick={() => setCurrentView('anime')}
+        />
+        <NavItem
+          icon={<HeartIcon className="w-8 h-8" />}
+          label="علاقه‌مندی‌ها"
+          isActive={currentView === 'favorites'}
+          onClick={() => setCurrentView('favorites')}
         />
       </ul>
     </nav>

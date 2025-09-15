@@ -10,9 +10,11 @@ interface HomeViewProps {
   onSelectItem: (item: Poster) => void;
   onSelectGenre: (genre: Genre) => void;
   onSelectCountry: (country: Country) => void;
+  favorites: Poster[];
+  onToggleFavorite: (item: Poster) => void;
 }
 
-export const HomeView = ({ onSelectItem, onSelectGenre, onSelectCountry }: HomeViewProps) => {
+export const HomeView = ({ onSelectItem, onSelectGenre, onSelectCountry, favorites, onToggleFavorite }: HomeViewProps) => {
   const [homeData, setHomeData] = useState<HomeData | null>(null);
   const [allGenres, setAllGenres] = useState<Genre[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +24,7 @@ export const HomeView = ({ onSelectItem, onSelectGenre, onSelectCountry }: HomeV
     const fetchHomeData = async () => {
       try {
         setLoading(true);
+
         const [homeDataResponse, allGenresResponse] = await Promise.all([
           api.getHome(),
           api.getAllGenres()
@@ -51,18 +54,20 @@ export const HomeView = ({ onSelectItem, onSelectGenre, onSelectCountry }: HomeV
   }
 
   return (
-    <div className="pt-10">
+    <div className="pt-6 md:pt-10">
       <GenreRow
         title="ژانرها"
         items={allGenres}
         onSelectItem={onSelectGenre}
       />
-      {homeData.genres.map((genre) => (
+      {[...homeData.genres].reverse().map((genre) => (
         <PosterRow
           key={genre.id}
           title={genre.title}
           items={genre.posters}
           onSelectItem={onSelectItem}
+          favorites={favorites}
+          onToggleFavorite={onToggleFavorite}
         />
       ))}
       {homeData.countries && homeData.countries.length > 0 && (
