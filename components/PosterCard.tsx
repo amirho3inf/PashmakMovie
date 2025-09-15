@@ -33,6 +33,7 @@ export const PosterCard = React.forwardRef<HTMLDivElement, PosterCardProps>(({ i
       onKeyDown={handleKeyDown}
     >
       <button
+        tabIndex={-1}
         onClick={handleFavoriteClick}
         aria-label={isFavorite ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'}
         className="absolute top-2 left-2 z-30 p-2 bg-black/60 rounded-full text-white transition-all duration-200 hover:bg-red-600/80 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white"
