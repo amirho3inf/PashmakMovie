@@ -36,7 +36,7 @@ const urlsToCache = [
   '/contexts/ScrollContainerContext.ts',
   // PWA files
   '/manifest.json',
-  '/icon.svg'
+  '/public/favicon.svg'
 ];
 
 // Use `self` to refer to the service worker scope
@@ -62,7 +62,7 @@ sw.addEventListener('fetch', (event: any) => {
     event.respondWith(fetch(event.request));
     return;
   }
-  
+
   // For other requests, use cache-first strategy
   event.respondWith(
     caches.match(event.request)
@@ -90,10 +90,10 @@ sw.addEventListener('fetch', (event: any) => {
             return response;
           }
         ).catch(err => {
-            console.error('Fetch failed; returning offline page instead.', err);
-            // Optional: return a fallback offline page
-            // return caches.match('/offline.html');
-            return new Response('Network error occurred', { status: 408, headers: { 'Content-Type': 'text/plain' } });
+          console.error('Fetch failed; returning offline page instead.', err);
+          // Optional: return a fallback offline page
+          // return caches.match('/offline.html');
+          return new Response('Network error occurred', { status: 408, headers: { 'Content-Type': 'text/plain' } });
         });
       })
   );

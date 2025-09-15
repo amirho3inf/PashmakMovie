@@ -1,0 +1,19 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Circle container (no red border) -->
+  <circle cx="256" cy="256" r="246" fill="#111827"/>
+
+  <!-- Puffy cotton candy inside -->
+  <path d="M256 140
+           C320 150, 400 190, 380 250
+           C410 310, 330 370, 250 380
+           C210 420, 150 410, 125 350
+           C90 310, 110 230, 150 200
+           C140 170, 190 150, 256 140Z"
+        fill="#111827" stroke="#dc2626" stroke-width="10"/>
+  
+  <!-- Play button -->
+  <path d="M320 256L210 320V192L320 256Z" fill="#dc2626"/>
+  
+  <!-- Cotton candy stick -->
+  <rect x="246" y="360" width="20" height="60" rx="5" fill="#dc2626"/>
+</svg>
