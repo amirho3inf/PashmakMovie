@@ -161,14 +161,14 @@ export const DetailView = ({ item, onBack, isFavorite, onToggleFavorite, onWatch
 
           <div className="flex-1 text-center md:text-right">
             <div className="flex items-center justify-center md:justify-start gap-x-4 mb-4">
-                <h1 className="text-3xl md:text-4xl lg:text-6xl font-extrabold text-white">{details.title}</h1>
-                <button
-                    onClick={() => onToggleFavorite(details)}
-                    aria-label={isFavorite ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'}
-                    className="p-2 bg-black/40 rounded-full text-white transition-all duration-200 hover:bg-red-600/80 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white self-center"
-                >
-                    <HeartIcon className={`w-7 h-7 md:w-9 md:h-9 ${isFavorite ? 'fill-red-500 stroke-red-500' : 'text-white'}`} />
-                </button>
+              <h1 className="text-3xl md:text-4xl lg:text-6xl font-extrabold text-white">{details.title}</h1>
+              <button
+                onClick={() => onToggleFavorite(details)}
+                aria-label={isFavorite ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'}
+                className="p-2 bg-black/40 rounded-full text-white transition-all duration-200 hover:bg-red-600/80 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white self-center"
+              >
+                <HeartIcon className={`w-7 h-7 md:w-9 md:h-9 ${isFavorite ? 'fill-red-500 stroke-red-500' : 'text-white'}`} />
+              </button>
             </div>
             <div className="flex items-center justify-center md:justify-start flex-wrap gap-x-4 gap-y-2 text-gray-300 text-base md:text-lg">
               <span>{details.year}</span>
@@ -222,40 +222,45 @@ export const DetailView = ({ item, onBack, isFavorite, onToggleFavorite, onWatch
 
               {selectedSeason && (
                 <div className="space-y-2">
-                  {selectedSeason.episodes.map(episode => (
-                    <div key={episode.id} className="bg-gray-800 rounded-lg p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all hover:bg-gray-700/80 focus-within:ring-4 focus-within:ring-red-500">
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-base md:text-lg text-white truncate">{episode.title}</h4>
-                        <span className="text-xs text-gray-500 mt-1 block">{episode.duration}</span>
-                      </div>
-                      {episode.sources && episode.sources.length > 0 && (
-                        <div className="flex-shrink-0 flex flex-wrap items-center justify-end gap-2 w-full sm:w-auto">
-                          {episode.sources.map(source => (
-                            <button
-                              key={`${source.id}-play`}
-                              onClick={() => handlePlayClick(source, episode)}
-                              className="flex-grow sm:flex-grow-0 px-3 py-2 bg-red-600 text-white font-bold rounded-lg text-sm md:text-base hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-200"
-                            >
-                              پخش {source.quality}
-                            </button>
-                          ))}
-                          {episode.sources.map(source => (
-                            <a
-                              key={`${source.id}-download`}
-                              href={source.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              download
-                              className="flex-grow sm:flex-grow-0 text-center px-3 py-2 bg-blue-600 text-white font-bold rounded-lg text-sm md:text-base hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-200"
-                            >
-                              دانلود {source.quality}
-                            </a>
-                          ))}
-                        </div>
-                      )}
+                {selectedSeason.episodes.map(episode => (
+                  <div
+                    key={episode.id}
+                    className="bg-gray-800 rounded-lg p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all hover:bg-gray-700/80 focus-within:ring-4 focus-within:ring-red-500"
+                  >
+                    <div className="sm:w-1/5 flex-shrink-0 min-w-[150px]">
+                      <h4 className="font-bold text-base md:text-lg text-white truncate">
+                        {episode.title}
+                      </h4>
                     </div>
-                  ))}
-                </div>
+              
+                    {episode.sources && episode.sources.length > 0 && (
+                      <div className="flex flex-wrap items-center justify-end gap-2 flex-1">
+                        {episode.sources.map(source => (
+                          <button
+                            key={`${source.id}-play`}
+                            onClick={() => handlePlayClick(source, episode)}
+                            className="flex-grow sm:flex-grow-0 px-3 py-2 bg-red-600 text-white font-bold rounded-lg text-sm md:text-base hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-200"
+                          >
+                            پخش {source.quality}
+                          </button>
+                        ))}
+                        {episode.sources.map(source => (
+                          <a
+                            key={`${source.id}-download`}
+                            href={source.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            download
+                            className="flex-grow sm:flex-grow-0 text-center px-3 py-2 bg-blue-600 text-white font-bold rounded-lg text-sm md:text-base hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-200"
+                          >
+                            دانلود {source.quality}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>              
               )}
             </div>
           )}
