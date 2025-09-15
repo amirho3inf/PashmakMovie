@@ -12,9 +12,10 @@ interface HomeViewProps {
   onSelectCountry: (country: Country) => void;
   favorites: Poster[];
   onToggleFavorite: (item: Poster) => void;
+  recentlyWatched: Poster[];
 }
 
-export const HomeView = ({ onSelectItem, onSelectGenre, onSelectCountry, favorites, onToggleFavorite }: HomeViewProps) => {
+export const HomeView = ({ onSelectItem, onSelectGenre, onSelectCountry, favorites, onToggleFavorite, recentlyWatched }: HomeViewProps) => {
   const [homeData, setHomeData] = useState<HomeData | null>(null);
   const [allGenres, setAllGenres] = useState<Genre[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,6 +61,15 @@ export const HomeView = ({ onSelectItem, onSelectGenre, onSelectCountry, favorit
         items={allGenres}
         onSelectItem={onSelectGenre}
       />
+      {recentlyWatched.length > 0 && (
+        <PosterRow
+          title="اخیراً تماشا شده"
+          items={recentlyWatched}
+          onSelectItem={onSelectItem}
+          favorites={favorites}
+          onToggleFavorite={onToggleFavorite}
+        />
+      )}
       {[...homeData.genres].reverse().map((genre) => (
         <PosterRow
           key={genre.id}

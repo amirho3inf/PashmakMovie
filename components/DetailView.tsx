@@ -11,9 +11,10 @@ interface DetailViewProps {
   onBack: () => void;
   isFavorite: boolean;
   onToggleFavorite: (item: Poster) => void;
+  onWatch: (item: Poster) => void;
 }
 
-export const DetailView = ({ item, onBack, isFavorite, onToggleFavorite }: DetailViewProps) => {
+export const DetailView = ({ item, onBack, isFavorite, onToggleFavorite, onWatch }: DetailViewProps) => {
   const [details, setDetails] = useState<Poster | null>(item);
   const [seasons, setSeasons] = useState<Season[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,6 +53,9 @@ export const DetailView = ({ item, onBack, isFavorite, onToggleFavorite }: Detai
   }, [item]);
 
   const handlePlayClick = (source: Source, episode?: Episode) => {
+    if (details) {
+      onWatch(details);
+    }
     setActiveMedia({ source, episode });
     setShowPlayer(false); // Ensure modal shows first
   };

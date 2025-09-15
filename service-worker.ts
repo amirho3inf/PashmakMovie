@@ -10,6 +10,7 @@ const urlsToCache = [
   '/services/api.ts',
   '/services/config.ts',
   '/services/favorites.ts',
+  '/services/recentlyWatched.ts',
   // Components
   '/components/BottomNavBar.tsx',
   '/components/BrowseView.tsx',

@@ -7,6 +7,7 @@ import { BrowseView } from './components/BrowseView';
 import { Poster, Genre, View, Country } from './types';
 import { initializeApiConfig } from './services/config';
 import * as favoritesService from './services/favorites';
+import * as recentlyWatchedService from './services/recentlyWatched';
 import { Loader } from './components/Loader';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { BottomNavBar } from './components/BottomNavBar';
@@ -21,6 +22,7 @@ export default function App() {
   const [selectedGenre, setSelectedGenre] = useState<Genre | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [favorites, setFavorites] = useState<Poster[]>([]);
+  const [recentlyWatched, setRecentlyWatched] = useState<Poster[]>([]);
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const mainScrollRef = useRef<HTMLElement>(null);
 
@@ -29,6 +31,7 @@ export default function App() {
       try {
         await initializeApiConfig();
         setFavorites(favoritesService.getFavorites());
+        setRecentlyWatched(recentlyWatchedService.getRecentlyWatched());
       } catch (error) {
         console.error("Failed to initialize application:", error);
         setConfigError("خطا در بارگذاری تنظیمات برنامه. لطفاً بعداً دوباره امتحان کنید.");
@@ -67,6 +70,11 @@ export default function App() {
     setFavorites(favoritesService.getFavorites());
   }, [favorites]);
 
+  const handleAddRecentlyWatched = useCallback((item: Poster) => {
+    recentlyWatchedService.addRecentlyWatched(item);
+    setRecentlyWatched(recentlyWatchedService.getRecentlyWatched());
+  }, []);
+
   const handleBack = useCallback(() => {
     setSelectedItem(null);
   }, []);
@@ -79,13 +87,14 @@ export default function App() {
           onBack={handleBack}
           isFavorite={favorites.some(fav => fav.id === selectedItem.id)}
           onToggleFavorite={handleToggleFavorite}
+          onWatch={handleAddRecentlyWatched}
         />
       );
     }
 
     switch (currentView) {
       case 'home':
-        return <HomeView onSelectItem={handleSelectItem} onSelectGenre={handleSelectGenre} onSelectCountry={handleSelectCountry} favorites={favorites} onToggleFavorite={handleToggleFavorite} />;
+        return <HomeView onSelectItem={handleSelectItem} onSelectGenre={handleSelectGenre} onSelectCountry={handleSelectCountry} favorites={favorites} onToggleFavorite={handleToggleFavorite} recentlyWatched={recentlyWatched} />;
       case 'search':
         return <SearchView onSelectItem={handleSelectItem} favorites={favorites} onToggleFavorite={handleToggleFavorite} />;
       case 'movies':
@@ -109,7 +118,7 @@ export default function App() {
         setCurrentView('home'); // Fallback
         return null;
       default:
-        return <HomeView onSelectItem={handleSelectItem} onSelectGenre={handleSelectGenre} onSelectCountry={handleSelectCountry} favorites={favorites} onToggleFavorite={handleToggleFavorite} />;
+        return <HomeView onSelectItem={handleSelectItem} onSelectGenre={handleSelectGenre} onSelectCountry={handleSelectCountry} favorites={favorites} onToggleFavorite={handleToggleFavorite} recentlyWatched={recentlyWatched} />;
     }
   };
 

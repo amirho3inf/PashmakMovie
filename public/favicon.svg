@@ -1,7 +1,7 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Circle container (no red border) -->
-  <circle cx="256" cy="256" r="246" fill="#111827"/>
-
+  <!-- Full square background -->
+  <rect width="512" height="512" rx="60" fill="#111827"/>
+  
   <!-- Puffy cotton candy inside -->
   <path d="M256 140
            C320 150, 400 190, 380 250
