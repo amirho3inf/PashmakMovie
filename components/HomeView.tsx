@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { api } from '../services/api';
-import type { HomeData, Poster, Genre, Country } from '../types';
-import { PosterRow } from './PosterRow';
-import { Loader } from './Loader';
-import { CountryRow } from './CountryRow';
-import { GenreRow } from './GenreRow';
+import React, { useState, useEffect } from "react";
+import { api } from "../services/api";
+import type { HomeData, Poster, Genre, Country } from "../types";
+import { PosterRow } from "./PosterRow";
+import { Loader } from "./Loader";
+import { CountryRow } from "./CountryRow";
+import { GenreRow } from "./GenreRow";
 
 interface HomeViewProps {
   onSelectItem: (item: Poster) => void;
@@ -15,7 +15,14 @@ interface HomeViewProps {
   recentlyWatched: Poster[];
 }
 
-export const HomeView = ({ onSelectItem, onSelectGenre, onSelectCountry, favorites, onToggleFavorite, recentlyWatched }: HomeViewProps) => {
+export const HomeView = ({
+  onSelectItem,
+  onSelectGenre,
+  onSelectCountry,
+  favorites,
+  onToggleFavorite,
+  recentlyWatched,
+}: HomeViewProps) => {
   const [homeData, setHomeData] = useState<HomeData | null>(null);
   const [allGenres, setAllGenres] = useState<Genre[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,12 +35,12 @@ export const HomeView = ({ onSelectItem, onSelectGenre, onSelectCountry, favorit
 
         const [homeDataResponse, allGenresResponse] = await Promise.all([
           api.getHome(),
-          api.getAllGenres()
+          api.getAllGenres(),
         ]);
         setHomeData(homeDataResponse);
         setAllGenres(allGenresResponse);
       } catch (err) {
-        setError('خطا در بارگذاری محتوا. لطفاً بعداً دوباره امتحان کنید.');
+        setError("خطا در بارگذاری محتوا. لطفاً بعداً دوباره امتحان کنید.");
         console.error(err);
       } finally {
         setLoading(false);
@@ -47,7 +54,11 @@ export const HomeView = ({ onSelectItem, onSelectGenre, onSelectCountry, favorit
   }
 
   if (error) {
-    return <div className="flex items-center justify-center h-full text-2xl text-red-500">{error}</div>;
+    return (
+      <div className="flex items-center justify-center h-full text-2xl text-red-500">
+        {error}
+      </div>
+    );
   }
 
   if (!homeData) {
@@ -56,11 +67,8 @@ export const HomeView = ({ onSelectItem, onSelectGenre, onSelectCountry, favorit
 
   return (
     <div className="pt-6 md:pt-10">
-      <GenreRow
-        title="ژانرها"
-        items={allGenres}
-        onSelectItem={onSelectGenre}
-      />
+      <GenreRow title="ژانرها" items={allGenres} onSelectItem={onSelectGenre} />
+
       {recentlyWatched.length > 0 && (
         <PosterRow
           title="اخیراً تماشا شده"
