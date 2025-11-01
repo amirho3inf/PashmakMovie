@@ -1,63 +1,113 @@
-import React from 'react';
-import { HomeIcon, SearchIcon, MovieIcon, TVIcon, SparklesIcon, HeartIcon } from './icons';
-import type { View } from '../types';
+import React from "react";
+import { Link, useLocation } from "react-router";
+import {
+  HomeIcon,
+  SearchIcon,
+  MovieIcon,
+  TVIcon,
+  SparklesIcon,
+  HeartIcon,
+} from "./icons";
+import { Button } from "./ui/button";
+import { cn } from "@/lib/utils";
 
-interface BottomNavBarProps {
-  currentView: View;
-  setCurrentView: (view: View) => void;
+interface NavItemProps {
+  icon: React.ReactNode;
+  label: string;
+  path: string;
+  isActive: boolean;
 }
 
-const NavItem = ({ icon, label, isActive, onClick }: { icon: React.ReactNode, label: string, isActive: boolean, onClick: () => void }) => {
-  return (
-    <button
-      onClick={onClick}
-      className={`
-        flex flex-col items-center justify-center space-y-1 w-full h-full
-        transition-colors duration-200
-        focus:outline-none focus:bg-gray-700/50 rounded-md
-        ${isActive ? 'text-red-500' : 'text-gray-400 hover:text-white'}
-      `}
-    >
-      {icon}
-      <span className="text-xs font-medium">{label}</span>
-    </button>
-  );
-};
+const NavItem = React.forwardRef<HTMLAnchorElement, NavItemProps>(
+  ({ icon, label, path, isActive }, ref) => {
+    return (
+      <Button
+        asChild
+        variant="ghost"
+        size="sm"
+        className={cn(
+          "flex flex-col items-center justify-center gap-1 h-full",
+          "min-w-0 flex-1 px-2 py-2",
+          "rounded-lg",
+          "transition-all duration-200",
+          isActive
+            ? "text-primary bg-accent"
+            : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+        )}
+      >
+        <Link ref={ref} to={path} className="flex flex-col items-center gap-1">
+          <span className="text-xl">{icon}</span>
+          <span className="text-[10px] font-medium leading-tight">{label}</span>
+        </Link>
+      </Button>
+    );
+  }
+);
 
-export const BottomNavBar = ({ currentView, setCurrentView }: BottomNavBarProps) => {
+NavItem.displayName = "NavItem";
+
+export const BottomNavBar = () => {
+  const location = useLocation();
+
+  // Determine active route
+  const isActive = (path: string) => {
+    if (path === "/") {
+      return location.pathname === "/";
+    }
+    return location.pathname.startsWith(path);
+  };
+
+  const navItems = [
+    {
+      icon: <HomeIcon className="w-5 h-5" />,
+      label: "خانه",
+      path: "/",
+    },
+    {
+      icon: <SearchIcon className="w-5 h-5" />,
+      label: "جستجو",
+      path: "/search",
+    },
+    {
+      icon: <MovieIcon className="w-5 h-5" />,
+      label: "فیلم‌ها",
+      path: "/movies",
+    },
+    {
+      icon: <TVIcon className="w-5 h-5" />,
+      label: "سریال‌ها",
+      path: "/series",
+    },
+    {
+      icon: <SparklesIcon className="w-5 h-5" />,
+      label: "انیمه",
+      path: "/anime",
+    },
+    {
+      icon: <HeartIcon className="w-5 h-5" />,
+      label: "علاقه‌مندی",
+      path: "/favorites",
+    },
+  ];
+
   return (
-    <nav className="fixed bottom-0 right-0 left-0 h-20 bg-gray-900/90 backdrop-blur-sm border-t border-gray-700 z-50 md:hidden">
-      <div className="flex justify-around items-center h-full">
-        <NavItem
-          icon={<HomeIcon className="w-7 h-7" />}
-          label="خانه"
-          isActive={currentView === 'home'}
-          onClick={() => setCurrentView('home')}
-        />
-        <NavItem
-          icon={<SearchIcon className="w-7 h-7" />}
-          label="جستجو"
-          isActive={currentView === 'search'}
-          onClick={() => setCurrentView('search')}
-        />
-        <NavItem
-          icon={<MovieIcon className="w-7 h-7" />}
-          label="فیلم‌ها"
-          isActive={currentView === 'movies'}
-          onClick={() => setCurrentView('movies')}
-        />
-        <NavItem
-          icon={<TVIcon className="w-7 h-7" />}
-          label="سریال‌ها"
-          isActive={currentView === 'series'}
-          onClick={() => setCurrentView('series')}
-        />
-         <NavItem
-          icon={<HeartIcon className="w-7 h-7" />}
-          label="علاقه‌مندی"
-          isActive={currentView === 'favorites'}
-          onClick={() => setCurrentView('favorites')}
-        />
+    <nav
+      className={cn(
+        "fixed bottom-0 right-0 left-0 z-50",
+        "h-20 border-t border-border bg-background/95 backdrop-blur",
+        "md:hidden" // Hide on desktop
+      )}
+    >
+      <div className="flex items-center justify-around h-full px-2">
+        {navItems.map((item) => (
+          <NavItem
+            key={item.path}
+            icon={item.icon}
+            label={item.label}
+            path={item.path}
+            isActive={isActive(item.path)}
+          />
+        ))}
       </div>
     </nav>
   );
