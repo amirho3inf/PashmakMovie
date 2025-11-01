@@ -244,7 +244,7 @@ export function BrowsePageContent({
         </Card>
       ) : items.length > 0 ? (
         <>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(9rem,1fr))] sm:grid-cols-[repeat(auto-fill,12rem)] justify-items-center gap-4 md:gap-6 px-4 md:px-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6 w-full">
             {items.map((item, index) => (
               <PosterCard
                 ref={items.length === index + 1 ? lastItemRef : null}
@@ -257,7 +257,7 @@ export function BrowsePageContent({
             ))}
           </div>
           {isFetchingNextPage && (
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(9rem,1fr))] sm:grid-cols-[repeat(auto-fill,12rem)] justify-items-center gap-4 md:gap-6 px-4 md:px-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6 w-full">
               {Array.from({ length: 4 }).map((_, index) => (
                 <PosterCardSkeleton key={`loading-${index}`} />
               ))}

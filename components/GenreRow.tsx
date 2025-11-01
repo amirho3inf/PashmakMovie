@@ -16,17 +16,17 @@ export const GenreRow = ({ title, items, onSelectItem }: GenreRowProps) => {
   }
 
   return (
-    <div className="mb-8 md:mb-10 space-y-4">
+    <div className="mb-6 sm:mb-8 md:mb-10 space-y-3 sm:space-y-4">
       <h2
         className={cn(
-          "text-2xl md:text-3xl font-bold text-foreground",
-          "px-4 md:px-6"
+          "text-xl sm:text-2xl md:text-3xl font-bold text-foreground",
+          "px-3 sm:px-4 md:px-6"
         )}
       >
         {title}
       </h2>
       <ScrollArea className="w-full whitespace-nowrap">
-        <div className="flex gap-3 md:gap-4 pb-4 px-4 md:px-6">
+        <div className="flex gap-3 sm:gap-4 md:gap-6 pb-4 px-3 sm:px-4 md:px-6">
           {items.map((item, index) => (
             <GenreCard
               key={`${title}-${item.id}-${index}`}

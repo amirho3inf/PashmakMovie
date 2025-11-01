@@ -24,7 +24,7 @@ export const CountryCard = React.forwardRef<HTMLDivElement, CountryCardProps>(
         onClick={() => onSelect(country)}
         onKeyDown={handleKeyDown}
         className={cn(
-          "group relative flex-shrink-0 w-36 h-24 md:w-48 md:h-28",
+          "group relative shrink-0 w-36 h-24 md:w-48 md:h-28",
           "overflow-hidden cursor-pointer border-2 p-0",
           "transition-all duration-300 ease-out",
           "hover:scale-105 hover:shadow-lg hover:shadow-primary/20",

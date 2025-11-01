@@ -66,7 +66,7 @@ const Root = () => {
       <SidebarInset className="overflow-x-hidden w-full">
         <main
           className={cn(
-            "p-6",
+            "p-3 sm:p-4 md:p-6",
             !isDesktop && "pb-24" // Add bottom padding for mobile footer navbar
           )}
         >

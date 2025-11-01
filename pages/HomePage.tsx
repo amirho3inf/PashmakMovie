@@ -63,7 +63,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="space-y-8 md:space-y-12 py-6 md:py-10">
+    <div className="space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-6 md:py-10">
       {/* Genres Section */}
       {loading ? (
         <div className="space-y-4">
@@ -72,7 +72,7 @@ export default function HomePage() {
             {Array.from({ length: 8 }).map((_, index) => (
               <Skeleton
                 key={index}
-                className="h-12 w-28 md:h-14 md:w-32 rounded-lg flex-shrink-0"
+                className="h-12 w-28 md:h-14 md:w-32 rounded-lg shrink-0"
               />
             ))}
           </div>
@@ -134,7 +134,7 @@ export default function HomePage() {
             {Array.from({ length: 6 }).map((_, index) => (
               <Skeleton
                 key={index}
-                className="h-24 w-36 md:h-28 md:w-48 rounded-lg flex-shrink-0"
+                className="h-24 w-36 md:h-28 md:w-48 rounded-lg shrink-0"
               />
             ))}
           </div>

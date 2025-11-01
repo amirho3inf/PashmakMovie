@@ -31,13 +31,16 @@ export const PosterCard = React.forwardRef<HTMLDivElement, PosterCardProps>(
         ref={ref}
         tabIndex={0}
         className={cn(
-          "group relative flex-shrink-0 w-36 h-56 md:w-48 md:h-72",
+          "group relative w-full",
           "overflow-hidden cursor-pointer border-0 p-0",
           "transition-all duration-300 ease-out",
           "hover:scale-[1.03] hover:shadow-xl hover:shadow-primary/20",
           "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background",
           "active:scale-[0.98]"
         )}
+        style={{
+          aspectRatio: "2/3", // Maintain poster aspect ratio
+        }}
         onClick={() => onSelect(item)}
         onKeyDown={handleKeyDown}
       >

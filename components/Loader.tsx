@@ -20,10 +20,10 @@ export const Loader = () => {
 export const PosterCardSkeleton = ({ className }: { className?: string }) => {
   return (
     <Card
-      className={cn(
-        "flex-shrink-0 w-36 h-56 md:w-48 md:h-72 p-0 border-0 overflow-hidden",
-        className
-      )}
+      className={cn("w-full p-0 border-0 overflow-hidden", className)}
+      style={{
+        aspectRatio: "2/3", // Maintain poster aspect ratio
+      }}
     >
       <Skeleton className="w-full h-full" />
     </Card>
@@ -31,9 +31,7 @@ export const PosterCardSkeleton = ({ className }: { className?: string }) => {
 };
 
 export const GenreCardSkeleton = () => {
-  return (
-    <Skeleton className="flex-shrink-0 h-12 w-28 md:h-14 md:w-32 rounded-lg" />
-  );
+  return <Skeleton className="shrink-0 h-12 w-28 md:h-14 md:w-32 rounded-lg" />;
 };
 
 export const PosterRowSkeleton = ({ title }: { title?: string }) => {
